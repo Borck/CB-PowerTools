@@ -76,7 +76,7 @@
           <Grid Margin="10">
             <DockPanel>
               <TextBlock DockPanel.Dock="Bottom" Text="{Binding Label}" Foreground="Azure" />
-              <Image Source="{Binding Icon}" Width="64" Height="64" />
+              <Image Source="{Binding Icon}" Width="64" Height="64" RenderOptions.BitmapScalingMode="Fant" />
             </DockPanel>
             <Button DataContext="{Binding Path}"
                     Style="{StaticResource ResetButtonStyle}"

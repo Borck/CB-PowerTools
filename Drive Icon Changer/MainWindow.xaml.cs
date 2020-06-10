@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using CB.Win32;
+using CB.WPF.Media;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using Notifications.Wpf.Core;
@@ -52,10 +53,10 @@ namespace Drive_Icon_Changer {
         var driveName = driveInfo.Name.TrimEnd(Path.DirectorySeparatorChar);
         try {
           var volumeLabel = driveInfo.VolumeLabel;
-          var icon = IconX
-                     .ExtractAssociatedIcon(driveName, 64)
-                     .ToImageSource();
-          drive = new Drive {Path = driveName, Label = $"{volumeLabel} ({driveName})", Icon = icon};
+          using var icon = Icons.ExtractIcon(driveName, IconSize.Jumbo);
+          var iconImage = icon.ToImageSource();
+
+          drive = new Drive {Path = driveName, Label = $"{volumeLabel} ({driveName})", Icon = iconImage};
         } catch (Exception e) {
           ShowError(driveName + " Drive", e.Message);
           Console.WriteLine(e);
@@ -95,7 +96,7 @@ namespace Drive_Icon_Changer {
 
 
     private void SetIcon(string driveName, string iconFileName) {
-      IconX.WriteDriveIconPathCurrentUser(driveName, iconFileName);
+      IconMiddleware.WriteDriveIconPathCurrentUser(driveName, iconFileName);
       Console.WriteLine($@"Set icon for drive '{driveName}' to '{iconFileName}'");
       UpdateIcons();
     }
@@ -104,7 +105,7 @@ namespace Drive_Icon_Changer {
 
     private void DriveButton_Click(object sender, RoutedEventArgs e) {
       var driveName = (string)((Button)sender).DataContext;
-      IconX.DeleteDriveIconPathCurrentUser(driveName);
+      IconMiddleware.DeleteDriveIconPathCurrentUser(driveName);
       //TODO: delete also for local machine
 
       Console.WriteLine($@"Reset icon for drive {driveName}");
