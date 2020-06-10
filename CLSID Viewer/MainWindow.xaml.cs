@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ClsidInfoCollector;
+using CB.Win32;
+using JetBrains.Annotations;
 using Microsoft.Win32;
 using Notifications.Wpf.Core;
 
 
 
-namespace CLSIDViewer {
+namespace CLSID_Viewer {
   /// <summary>
   ///   Interaction logic for MainWindow.xaml
   /// </summary>
   public partial class MainWindow : Window {
+    /// <summary>
+    ///   Interaction logic for MainWindow.xaml
+    /// </summary>
     private readonly NotificationManager _notificationManager = new NotificationManager();
 
     public MainWindow() => InitializeComponent();
@@ -25,10 +28,14 @@ namespace CLSIDViewer {
 
 
     private void ClsidInput_KeyUp(object sender, KeyEventArgs e) {
-      if (!e.Key.Equals(Key.Enter)) {
-        return;
+      if (e.Key.Equals(Key.Enter)) {
+        UpdatePreview();
       }
+    }
 
+
+
+    private void UpdatePreview() {
       var classId = ClsidInput.Text;
       if (!TryGetRegistryKeyOfClass(classId, out var classIdRegKey)) {
         ShowError("Class not found", classId);
@@ -71,7 +78,8 @@ namespace CLSIDViewer {
       var iconIndex = tokens.Length == 2
                         ? int.Parse(tokens[1].Trim())
                         : 0;
-      return ExtractIcon.ExtractIconFromExe(path, true, iconIndex);
+      return Icons.ExtractIconFromResource(path, iconIndex, 128);
+      // return ExtractIcon.ExtractIconFromExe(path, true, iconIndex);
     }
 
 
@@ -130,5 +138,9 @@ namespace CLSIDViewer {
             .OpenSubKey(@"CLSID\" + clsid);
       return key != default(RegistryKey);
     }
+
+
+
+    private void Button_Click(object sender, RoutedEventArgs e) => UpdatePreview();
   }
 }
