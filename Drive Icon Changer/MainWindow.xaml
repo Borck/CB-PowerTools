@@ -10,7 +10,7 @@
                  mc:Ignorable="d"
                  Height="450" Width="800"
                  Loaded="Window_Loaded"
-                 Background="#2C3E50"
+                 Background="#252525"
                  Icon="icon.ico"
                  ResizeMode="CanResize"
                  Title=" Drive Icon Changer"
@@ -44,11 +44,22 @@
           </ControlTemplate>
         </Setter.Value>
       </Setter>
+      <Setter Property="Visibility" Value="Collapsed" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=IsMouseOver}"
+                     Value="True">
+          <Setter Property="Visibility" Value="Visible" />
+        </DataTrigger>
+      </Style.Triggers>
     </Style>
   </Window.Resources>
   <mah:MetroWindow.RightWindowCommands>
     <mah:WindowCommands>
-      <Button Padding="5" HorizontalAlignment="Right" Click="RefreshButton_Click">
+      <mah:ToggleSwitch x:Name="ListDriveToggle" OffContent="Active" OnContent="Any"
+                        ToolTip="List any drive, if enabled. Otherwise, it lists only active drives."
+                        VerticalAlignment="Center" Margin="5,0" IsOn="False" Toggled="ListActiveDrive_Toggled"
+                        Width="150" />
+      <Button Padding="15,5" HorizontalAlignment="Right" Click="RefreshButton_Click">
         <iconPacks:PackIconMaterial Kind="Reload" VerticalAlignment="Center" HorizontalAlignment="Center" />
       </Button>
     </mah:WindowCommands>
@@ -57,25 +68,29 @@
   <Grid>
     <controls:NotificationArea x:Name="Notification" Position="BottomRight" MaxItems="3" />
     <ListView x:Name="Drives"
-              ItemsSource="{Binding}" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+              ItemsSource="{Binding}"
+              ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+              ScrollViewer.VerticalScrollBarVisibility="Auto"
+              HorizontalAlignment="Stretch"
               SelectedItem="{Binding SelectedDrive, RelativeSource={RelativeSource AncestorType=Window}}"
               SelectionChanged="Drive_SelectionChanged"
               Background="Transparent"
               BorderThickness="0"
-              Margin="24"
+              Margin="5"
               Drop="Drives_OnDrop"
               AllowDrop="True">
       <ListView.ItemsPanel>
         <ItemsPanelTemplate>
-          <WrapPanel />
+          <WrapPanel
+            Width="{Binding ActualWidth,RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}" />
         </ItemsPanelTemplate>
       </ListView.ItemsPanel>
 
       <ListView.ItemTemplate>
         <DataTemplate>
-          <Grid Margin="10">
-            <DockPanel>
-              <TextBlock DockPanel.Dock="Bottom" Text="{Binding Label}" Foreground="Azure" />
+          <Grid>
+            <DockPanel Margin="10">
+              <TextBlock DockPanel.Dock="Bottom" Text="{Binding Label}" />
               <Image Source="{Binding Icon}" Width="64" Height="64" RenderOptions.BitmapScalingMode="Fant" />
             </DockPanel>
             <Button DataContext="{Binding Path}"
