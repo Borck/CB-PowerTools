@@ -14,11 +14,29 @@ namespace Registry_Exporter {
   ///   Interaction logic for MainWindow.xaml
   /// </summary>
   public partial class MainWindow {
-    public MainWindow() => InitializeComponent();
+    public enum Exporters {
+      Puppet
+    }
 
 
 
-    private void Button_Click(object sender, RoutedEventArgs e) => ExtractRegKeyToPuppetText();
+    public MainWindow() {
+      InitializeComponent();
+      Exporter.ItemsSource = Enum.GetValues(typeof(Exporters));
+      Exporter.SelectedIndex = 0;
+    }
+
+
+
+    private void Button_Click(object sender, RoutedEventArgs e) {
+      switch ((Exporters)Exporter.SelectedItem) {
+        case Exporters.Puppet:
+          ExtractRegKeyToPuppetText();
+          break;
+        default:
+          throw new ArgumentOutOfRangeException();
+      }
+    }
 
 
 
