@@ -99,7 +99,7 @@
               <Button x:Name="AddShortcutsToComputer" Grid.Row="1" Content="Computer &gt;" Background="#FF34495E"
                       BorderBrush="#FF4D6F92" Foreground="White" Click="AddShortcutsToComputer_Click"
                       Margin="10,55,10,0" Height="50" VerticalAlignment="Top" />
-              <Button x:Name="ShortcutRemoveBtn" Grid.Row="1" Content="&lt;" Background="#FF34495E"
+              <Button x:Name="ShortcutRemoveBtn" Grid.Row="1" Content="&lt; Remove" Background="#FF34495E"
                       BorderBrush="#FF4D6F92" Foreground="White" Margin="10,151,10,0" Height="50"
                       VerticalAlignment="Top" Grid.RowSpan="2" Click="ShortcutRemoveBtn_Click" />
             </Grid>
