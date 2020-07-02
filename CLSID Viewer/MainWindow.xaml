@@ -11,6 +11,7 @@
                  mc:Ignorable="d"
                  Title="CLSID Viewer" Height="453" Width="760" Icon="icon.ico">
   <Window.Resources>
+    <local:ValueEvaluationConverter x:Key="ValueEvaluationConverter" />
     <Style TargetType="Image" x:Key="SquareImage">
       <Setter Property="Height" Value="{Binding ActualWidth, RelativeSource={RelativeSource Self}}" />
     </Style>
@@ -86,6 +87,8 @@
           <GridView>
             <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Key}" />
             <GridViewColumn Header="Value" Width="500" DisplayMemberBinding="{Binding Value}" />
+            <GridViewColumn Header="Evaluated Value" Width="500"
+                            DisplayMemberBinding="{Binding Path=Value, Converter={StaticResource ValueEvaluationConverter}}" />
           </GridView>
         </ListView.View>
       </ListView>
