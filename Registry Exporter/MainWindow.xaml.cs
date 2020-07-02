@@ -44,17 +44,22 @@ namespace Registry_Exporter {
       var regKeyPath = RegKeyControl.Text;
       var recursive = RecursiveCheck.IsChecked ?? false;
       var strBuilder = new StringBuilder();
-      using (var regKey = Registry.OpenKey(regKeyPath)) {
-        if (regKey == null) {
-          ShowError("Could not open registry key, rerun with admin privileges may help");
-          return;
-        }
+      try {
+        using (var regKey = Registry.OpenKey(regKeyPath)) {
+          if (regKey == null) {
+            ShowError("Could not open registry key, rerun with admin privileges may help");
+            return;
+          }
 
-        if (recursive) {
-          ExtractRegKeyToPuppetTextRecursive(strBuilder, regKey);
-        } else {
-          AppendRegKeyToPuppetText(strBuilder, regKey);
+          if (recursive) {
+            ExtractRegKeyToPuppetTextRecursive(strBuilder, regKey);
+          } else {
+            AppendRegKeyToPuppetText(strBuilder, regKey);
+          }
         }
+      } catch (Exception e) {
+        Console.WriteLine(e);
+        ShowError(e.Message);
       }
 
       InfoBox.Visibility = Visibility.Collapsed;
