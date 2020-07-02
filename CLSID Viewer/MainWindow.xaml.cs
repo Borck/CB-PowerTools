@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using CB.Win32;
 using JetBrains.Annotations;
 using Microsoft.Win32;
 using Notifications.Wpf.Core;
@@ -78,26 +78,7 @@ namespace CLSID_Viewer {
       var iconIndex = tokens.Length == 2
                         ? int.Parse(tokens[1].Trim())
                         : 0;
-      return ExtractIconFromResource(path, iconIndex, width, height);
-    }
-
-
-
-    [DllImport("User32.dll")]
-    public static extern int PrivateExtractIcons(string libraryName,
-                                                 int iconIndex,
-                                                 int iconWidth,
-                                                 int iconHeight,
-                                                 out IntPtr iconHandles,
-                                                 out IntPtr iconId,
-                                                 int numberIcons,
-                                                 IntPtr flags);
-
-
-
-    public static Icon ExtractIconFromResource(string filename, int iconIndex, int width, int height) {
-      PrivateExtractIcons(filename, iconIndex, width, height, out var iconHandle, out _, 1, IntPtr.Zero);
-      return iconHandle != IntPtr.Zero ? System.Drawing.Icon.FromHandle(iconHandle) : null;
+      return Icons.ExtractIcon(path, iconIndex, width, height);
     }
 
 
