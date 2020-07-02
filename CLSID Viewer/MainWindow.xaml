@@ -81,7 +81,14 @@
       </Grid>
       <TextBlock x:Name="ErrorOutput" TextWrapping="Wrap" KeyUp="ClsidInput_KeyUp" Grid.Row="1" VerticalAlignment="Top"
                  Visibility="Collapsed" Padding="5" />
-      <ListBox x:Name="KeyValuesList" Grid.Row="2" Margin="5" />
+      <ListView x:Name="KeyValuesList" Grid.Row="2" Margin="5">
+        <ListView.View>
+          <GridView>
+            <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Key}" />
+            <GridViewColumn Header="Value" Width="500" DisplayMemberBinding="{Binding Value}" />
+          </GridView>
+        </ListView.View>
+      </ListView>
     </Grid>
     <Rectangle Grid.Column="1" Width="1" VerticalAlignment="Stretch" Fill="Gray" />
     <StackPanel Grid.Column="2">
