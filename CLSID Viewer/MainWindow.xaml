@@ -9,7 +9,7 @@
                  xmlns:controls="clr-namespace:Notifications.Wpf.Core.Controls;assembly=Notifications.Wpf.Core"
                  xmlns:uicontrols="clr-namespace:UIControls"
                  mc:Ignorable="d"
-                 Title="CLSID Viewer" Height="453" Width="760" Icon="icon.ico">
+                 Title="CLSID Viewer" Height="600" Width="1000" Icon="icon.ico">
   <Window.Resources>
     <local:ValueEvaluationConverter x:Key="ValueEvaluationConverter" />
     <Style TargetType="Image" x:Key="SquareImage">
@@ -85,9 +85,9 @@
       <ListView x:Name="KeyValuesList" Grid.Row="2" Margin="5">
         <ListView.View>
           <GridView>
-            <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Key}" />
-            <GridViewColumn Header="Value" Width="500" DisplayMemberBinding="{Binding Value}" />
-            <GridViewColumn Header="Evaluated Value" Width="500"
+            <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Key}" />
+            <GridViewColumn Header="Value" Width="250" DisplayMemberBinding="{Binding Value}" />
+            <GridViewColumn Header="Evaluated Value" Width="250"
                             DisplayMemberBinding="{Binding Path=Value, Converter={StaticResource ValueEvaluationConverter}}" />
           </GridView>
         </ListView.View>
