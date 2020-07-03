@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using CB.System;
 using CB.Win32;
+using CB.WPF.Drawing;
 using JetBrains.Annotations;
 using Microsoft.Win32;
 using Notifications.Wpf.Core;
@@ -53,7 +51,7 @@ namespace CLSID_Viewer {
                    ? GetIcon(imagePath, (int)DefaultIconImage.ActualWidth, (int)DefaultIconImage.ActualHeight)
                    : null;
 
-      var imageSource = CreateImageSource(icon);
+      var imageSource = icon.ToImageSource();
       DefaultIconImage.Source = imageSource;
     }
 
@@ -67,34 +65,8 @@ namespace CLSID_Viewer {
 
 
     private static Icon GetIcon(string imagePath, int width, int height) {
-      var tokens = imagePath.Split(',');
-
-      if (tokens.Length == 0 ||
-          tokens.Length > 2) {
-        throw new ArgumentException("Could not match image path: " + imagePath);
-      }
-
-      var path = tokens[0];
-      var iconIndex = tokens.Length == 2
-                        ? int.Parse(tokens[1].Trim())
-                        : 0;
-      return Icons.ExtractIcon(path, iconIndex, width, height);
-    }
-
-
-
-    private static ImageSource CreateImageSource(Icon icon) {
-      if (icon == null) {
-        return null;
-      }
-
-      var hBitmap = icon.ToBitmap().GetHbitmap();
-      return Imaging.CreateBitmapSourceFromHBitmap(
-        hBitmap,
-        IntPtr.Zero,
-        Int32Rect.Empty,
-        BitmapSizeOptions.FromEmptyOptions()
-      );
+      var (iconFile, iconIndex) = imagePath.SeparateLast(',', idString => int.Parse(idString.Trim()));
+      return Icons.ExtractIcon(iconFile, iconIndex, width, height);
     }
 
 
