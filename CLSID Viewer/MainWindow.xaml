@@ -7,103 +7,119 @@
 
                  xmlns:local="clr-namespace:CLSID_Viewer"
                  xmlns:controls="clr-namespace:Notifications.Wpf.Core.Controls;assembly=Notifications.Wpf.Core"
-                 xmlns:uicontrols="clr-namespace:UIControls"
+                 xmlns:controls1="clr-namespace:System.Windows.Controls;assembly=DotNetProjects.Input.Toolkit"
                  mc:Ignorable="d"
-                 Title="CLSID Viewer" Height="600" Width="1000" Icon="icon.ico">
+                 Height="600" Width="1000" Icon="icon.ico" SizeChanged="MetroWindow_SizeChanged" MinWidth=" 500"
+                 MinHeight="300">
   <Window.Resources>
     <local:ValueEvaluationConverter x:Key="ValueEvaluationConverter" />
+    <local:RegistryClassViewModel x:Key="ViewModel" />
     <Style TargetType="Image" x:Key="SquareImage">
       <Setter Property="Height" Value="{Binding ActualWidth, RelativeSource={RelativeSource Self}}" />
     </Style>
-    <Style x:Key="MyWaterMarkStyle" TargetType="{x:Type TextBox}">
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate TargetType="{x:Type TextBox}">
-            <Grid>
-              <Border Background="White" BorderBrush="#FF7D8683" BorderThickness="1" />
-              <ScrollViewer x:Name="PART_ContentHost" Margin="5,0,0,0" VerticalAlignment="Center" />
-              <Label Margin="5,0,0,0" x:Name="WaterMarkLabel" Content="{TemplateBinding Tag}"
-                     VerticalAlignment="Center"
-                     Visibility="Collapsed" Foreground="Gray" FontFamily="Arial" />
-            </Grid>
-            <ControlTemplate.Triggers>
-              <MultiTrigger>
-                <MultiTrigger.Conditions>
-                  <Condition Property="Text" Value="" />
-                </MultiTrigger.Conditions>
-                <Setter Property="Visibility" TargetName="WaterMarkLabel" Value="Visible" />
-              </MultiTrigger>
-              <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="DimGray" />
-              </Trigger>
-            </ControlTemplate.Triggers>
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-    </Style>
   </Window.Resources>
-  <mah:MetroWindow.RightWindowCommands>
+  <mah:MetroWindow.LeftWindowCommands>
     <mah:WindowCommands HorizontalAlignment="Stretch">
-      <TextBox x:Name="ClsidInput" KeyUp="ClsidInput_KeyUp"
-               Foreground="Black"
-               VerticalAlignment="Center" HorizontalAlignment="Stretch"
-               Style="{StaticResource MyWaterMarkStyle}"
-               Tag="{}{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
-               Width="300"
-               Height="24"
-               Cursor="IBeam" />
-      <Button Content="&#xE721;"
-              FontFamily="Segoe MDL2 Assets"
-              Padding="3"
-              VerticalAlignment="Stretch"
-              Width="50"
-              Click="Button_Click" />
+      <Separator VerticalAlignment="Stretch" Margin="5,0" Foreground="Transparent" />
+      <StackPanel Margin="5,0,0,0" Orientation="Horizontal">
+        <controls1:AutoCompleteBox x:Name="ClsidInput" KeyUp="ClsidInput_KeyUp"
+                                   VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                                   DataContext="{StaticResource ViewModel}"
+                                   ItemsSource="{Binding Classes}"
+                                   SelectedItem="{Binding SelectedClass, Mode=TwoWay}"
+                                   ItemFilter="{Binding Filter}"
+                                   Width="300"
+                                   Height="24"
+                                   Cursor="IBeam"
+                                   mah:TextBoxHelper.Watermark="{}{20D04FE0-3AEA-1069-A2D8-08002B30309D} or any class ID"
+                                   SelectionChanged="ClsidInput_SelectionChanged">
+          <controls1:AutoCompleteBox.ItemTemplate>
+            <DataTemplate DataType="{x:Type local:RegistryClass}">
+              <StackPanel Orientation="Horizontal">
+                <Label
+                  Content="{Binding Id}"
+                  Width="300" />
+                <Label
+                  Content="{Binding LocalizedName}"
+                  FontStyle="Italic"
+                  Foreground="DarkGray" />
+              </StackPanel>
+            </DataTemplate>
+          </controls1:AutoCompleteBox.ItemTemplate>
+        </controls1:AutoCompleteBox>
+        <!-- <Button Content="&#xE721;" -->
+        <!--         FontFamily="Segoe MDL2 Assets" -->
+        <!--         Padding="0,3,3,3" -->
+        <!--         VerticalAlignment="Stretch" -->
+        <!--         Width="50" -->
+        <!--         Click="Button_Click" /> -->
+      </StackPanel>
+
     </mah:WindowCommands>
-  </mah:MetroWindow.RightWindowCommands>
-  <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="3*" />
-      <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
-    <Grid Grid.Column="0">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
-      </Grid.RowDefinitions>
-      <controls:NotificationArea x:Name="Notification" Position="BottomRight" MaxItems="3" />
-      <Grid Grid.Row="0" Margin="5">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="5" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
+  </mah:MetroWindow.LeftWindowCommands>
+  <DockPanel>
+    <StatusBar DockPanel.Dock="Bottom">
+      <StatusBarItem>
+        <StackPanel Orientation="Horizontal">
+          <ProgressBar x:Name="ProgressBar" Minimum="0" Maximum="100" Value="75" Width="100" Height="5"
+                       BorderThickness="0" />
+          <TextBlock x:Name="StatusText" />
+        </StackPanel>
+      </StatusBarItem>
+    </StatusBar>
+
+    <Grid>
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="3*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Grid Grid.Column="0">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:NotificationArea x:Name="Notification" Position="BottomRight" MaxItems="3" />
+        <Grid Grid.Row="0" Margin="5">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+        </Grid>
+        <TextBlock x:Name="ErrorOutput" TextWrapping="Wrap" KeyUp="ClsidInput_KeyUp" Grid.Row="1"
+                   VerticalAlignment="Top"
+                   Visibility="Collapsed" Padding="5" />
+        <ListView x:Name="KeyValuesList" Grid.Row="2" Margin="5">
+          <ListView.View>
+            <GridView>
+              <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Key}" />
+              <GridViewColumn Header="Value" Width="250" DisplayMemberBinding="{Binding Value}" />
+              <GridViewColumn Header="Evaluated Value" Width="250"
+                              DisplayMemberBinding="{Binding Path=Value, Converter={StaticResource ValueEvaluationConverter}}" />
+            </GridView>
+          </ListView.View>
+        </ListView>
       </Grid>
-      <TextBlock x:Name="ErrorOutput" TextWrapping="Wrap" KeyUp="ClsidInput_KeyUp" Grid.Row="1" VerticalAlignment="Top"
-                 Visibility="Collapsed" Padding="5" />
-      <ListView x:Name="KeyValuesList" Grid.Row="2" Margin="5">
-        <ListView.View>
-          <GridView>
-            <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Key}" />
-            <GridViewColumn Header="Value" Width="250" DisplayMemberBinding="{Binding Value}" />
-            <GridViewColumn Header="Evaluated Value" Width="250"
-                            DisplayMemberBinding="{Binding Path=Value, Converter={StaticResource ValueEvaluationConverter}}" />
-          </GridView>
-        </ListView.View>
-      </ListView>
+      <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+      <StackPanel Grid.Column="2" Margin="5"
+                  DataContext="{Binding Source={StaticResource ViewModel}, Path=SelectedClass}">
+        <Label x:Name="NameLabel" FontSize="20" Height="36" />
+        <Border BorderThickness="1">
+          <Image x:Name="DefaultIconImage" Style="{StaticResource SquareImage}"
+                 Height="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                 Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                 MaxHeight="256"
+                 MaxWidth="256"
+                 Stretch="UniformToFill"
+                 RenderOptions.BitmapScalingMode="HighQuality"
+                 RenderOptions.EdgeMode="Aliased" />
+        </Border>
+        <TextBlock x:Name="InfoTipText" TextWrapping="Wrap" VerticalAlignment="Stretch" Background="Transparent" />
+      </StackPanel>
+
     </Grid>
-    <Rectangle Grid.Column="1" Width="1" VerticalAlignment="Stretch" Fill="Gray" />
-    <StackPanel Grid.Column="2">
-      <!-- <Label Content="Preview:" FontSize="20" /> -->
-      <Border BorderThickness="1" Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}">
-        <Image x:Name="DefaultIconImage" Style="{StaticResource SquareImage}" HorizontalAlignment="Stretch"
-               Stretch="UniformToFill"
-               RenderOptions.BitmapScalingMode="HighQuality"
-               RenderOptions.EdgeMode="Aliased" />
-      </Border>
-    </StackPanel>
-
-
-  </Grid>
+  </DockPanel>
 </mah:MetroWindow>

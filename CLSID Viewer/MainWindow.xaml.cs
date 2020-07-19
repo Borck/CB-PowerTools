@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using CB.System;
-using CB.Win32;
+using CB.Win32.Registry;
 using CB.WPF.Drawing;
-using JetBrains.Annotations;
-using Microsoft.Win32;
 using Notifications.Wpf.Core;
 
 
@@ -16,43 +14,101 @@ namespace CLSID_Viewer {
   ///   Interaction logic for MainWindow.xaml
   /// </summary>
   public partial class MainWindow {
+    private const int DefaultRegistryDepth = 5;
+
+
+    private static readonly DependencyProperty ModelViewProperty = DependencyProperty.Register(
+      nameof(ModelView),
+      typeof(RegistryClassViewModel),
+      typeof(MainWindow),
+      new PropertyMetadata(new RegistryClassViewModel())
+    );
+
+    private RegistryClassViewModel ModelView {
+      get => (RegistryClassViewModel)GetValue(ModelViewProperty);
+      set => SetValue(ModelViewProperty, value);
+    }
+
+
     /// <summary>
     ///   Interaction logic for MainWindow.xaml
     /// </summary>
     private readonly NotificationManager _notificationManager = new NotificationManager();
 
-    public MainWindow() => InitializeComponent();
+
+
+    public MainWindow() {
+      InitializeComponent();
+      var modelView = ModelView;
+      StatusText.Text = "Loading classes";
+      Task.Run(() => AsyncInitialization(modelView));
+    }
+    // ModelView.SelectionChanged += SelectionChanged;
+
+
+
+    // private void SelectionChanged(object? sender, RegistryClass e) => UpdatePreview(e);
+
+
+
+    private void AsyncInitialization(RegistryClassViewModel modelView) {
+      var interval = TimeSpan.FromMilliseconds(250);
+      var updateTime = DateTime.Now;
+
+      var progress = new Progress<(int value, int max)>();
+      progress.ProgressChanged += (object? sender, (int i, int n) progressValues) => {
+                                    if (progressValues.i >= progressValues.n) {
+                                      OnInitializationDone();
+                                    }
+
+                                    var now = DateTime.Now;
+                                    if (now - updateTime > interval) {
+                                      updateTime = now;
+                                      Dispatcher.InvokeAsync(() => ProgressBar.Value = progressValues.i);
+                                    }
+                                  };
+      modelView.LoadClasses(progress);
+    }
+
+
+
+    private void OnInitializationDone() =>
+      Dispatcher.Invoke(
+        () => {
+          ProgressBar.Value = 100;
+          ProgressBar.Visibility = Visibility.Collapsed;
+          StatusText.Text = "done";
+        }
+      );
 
 
 
     private void ClsidInput_KeyUp(object sender, KeyEventArgs e) {
       if (e.Key.Equals(Key.Enter)) {
-        UpdatePreview();
+        UpdatePreview(ModelView.SelectedClass);
       }
     }
 
 
 
-    private void UpdatePreview() {
-      var classId = ClsidInput.Text;
-      if (!TryGetRegistryKeyOfClass(classId, out var classIdRegKey)) {
-        ShowError("Class not found", classId);
+    private void UpdatePreview(RegistryClass regClass) {
+      // var classId = ClsidInput.Text;
+      if (regClass == default) {
+        ShowError("Class not found", ClsidInput.Text);
         return;
       }
 
       var keyValuesItems = KeyValuesList.Items;
       keyValuesItems.Clear();
-      var keyValues = GetRegistryValues(classIdRegKey);
-      foreach (var keyValue in keyValues) {
+      foreach (var keyValue in regClass.GetRegistryValues(DefaultRegistryDepth)) {
         keyValuesItems.Add(keyValue);
       }
 
-      var icon = keyValues.TryGetValue("DefaultIcon\\", out var imagePath)
-                   ? GetIcon(imagePath, (int)DefaultIconImage.ActualWidth, (int)DefaultIconImage.ActualHeight)
-                   : null;
-
-      var imageSource = icon.ToImageSource();
-      DefaultIconImage.Source = imageSource;
+      DefaultIconImage.Source = regClass
+                                ?.GetDefaultIcon((int)DefaultIconImage.ActualWidth, (int)DefaultIconImage.ActualHeight)
+                                ?.ToImageSource();
+      NameLabel.Content = regClass.LocalizedName;
+      InfoTipText.Text = regClass.InfoTip;
     }
 
 
@@ -64,54 +120,25 @@ namespace CLSID_Viewer {
 
 
 
-    private static Icon GetIcon(string imagePath, int width, int height) {
-      var (iconFile, iconIndex) = imagePath.SeparateLast(',', idString => int.Parse(idString.Trim()));
-      return Icons.ExtractIcon(iconFile, iconIndex, width, height);
+    private void Button_Click(object sender, RoutedEventArgs e) => UpdatePreview(
+      Registry.OpenKey(ClsidInput.Text) is {} registryKey
+        ? new RegistryClass(registryKey)
+        : default
+    );
+
+
+
+    private void MetroWindow_SizeChanged(object sender, SizeChangedEventArgs e) =>
+      ClsidInput.Width = Width - 400;
+
+
+
+    private void ClsidInput_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+      ModelView.SelectedClass = e.AddedItems.Count > 0 &&
+                                e.AddedItems[0] is RegistryClass registryClass
+                                  ? registryClass
+                                  : default;
+      e.Handled = true;
     }
-
-
-
-    private static Dictionary<string, string> GetRegistryValues(RegistryKey key) {
-      var values = new Dictionary<string, string>();
-      readKeyValuesFromKeyAndSubKeys(key, values);
-      return values;
-    }
-
-
-
-    private static void readKeyValuesFromKeyAndSubKeys(
-      RegistryKey registryKey,
-      Dictionary<string, string> registryKeyValues,
-      string prefix = "") {
-      foreach (var valueName in registryKey.GetValueNames()) {
-        var valueNameGlobal = prefix + valueName;
-        var value = registryKey.GetValue(valueName).ToString();
-        registryKeyValues.Add(valueNameGlobal, value);
-      }
-
-      foreach (var subKeyName in registryKey.GetSubKeyNames()) {
-        var subKey = registryKey.OpenSubKey(subKeyName);
-        var subPrefix = prefix + subKeyName + "\\";
-
-        readKeyValuesFromKeyAndSubKeys(
-          subKey,
-          registryKeyValues,
-          subPrefix
-        );
-      }
-    }
-
-
-
-    private static bool TryGetRegistryKeyOfClass([NotNull] string clsid, out RegistryKey key) {
-      key = RegistryKey
-            .OpenBaseKey(RegistryHive.ClassesRoot, RegistryView.Default)
-            .OpenSubKey(@"CLSID\" + clsid);
-      return key != default(RegistryKey);
-    }
-
-
-
-    private void Button_Click(object sender, RoutedEventArgs e) => UpdatePreview();
   }
 }
