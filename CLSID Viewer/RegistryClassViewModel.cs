@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using CB.System.Collections;
 using JetBrains.Annotations;
@@ -93,11 +94,28 @@ namespace CLSID_Viewer {
 
 
 
+    [Flags]
+    public enum ErrorModes : uint {
+      SYSTEM_DEFAULT = 0x0,
+      SEM_FAILCRITICALERRORS = 0x0001,
+      SEM_NOALIGNMENTFAULTEXCEPT = 0x0004,
+      SEM_NOGPFAULTERRORBOX = 0x0002,
+      SEM_NOOPENFILEERRORBOX = 0x8000
+    }
+
+
+
+    [DllImport("kernel32.dll")]
+    private static extern ErrorModes SetErrorMode(ErrorModes errorMode);
+
+
+
     public void Initialize() {
       if (IsInitialized) {
         throw new ArgumentException("View model is already initialized");
       }
 
+      SetErrorMode(ErrorModes.SEM_FAILCRITICALERRORS);
       var progress = new Progress<ProgressInfo>();
       TaskStarted?.Invoke(progress);
       LoadClasses(progress);
