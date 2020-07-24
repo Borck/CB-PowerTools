@@ -21,9 +21,7 @@ namespace CLSID_Viewer {
     public RegistryKey DefaultIconSubKey => RegistryKey.OpenSubKey("DefaultIcon");
 
 
-    public string Id => RegistryKey.Name.TrySeparateLast('\\', out var left, out var right)
-                          ? right
-                          : left;
+    public string Id => RegistryKey.Name;
 
     /// <summary>
     ///   The evaluated value of LocalizedString
@@ -56,7 +54,7 @@ namespace CLSID_Viewer {
     /// <summary>
     ///   The default value
     /// </summary>
-    public string Name {
+    public string DefaultName {
       get => RegistryKey.GetValue(default) as string;
       set => RegistryKey.SetValue(default, value);
     }

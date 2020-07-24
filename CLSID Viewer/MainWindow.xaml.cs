@@ -19,7 +19,7 @@ namespace CLSID_Viewer {
 
     private static readonly DependencyProperty ModelViewProperty = DependencyProperty.Register(
       nameof(ModelView),
-      typeof(RegistryClassViewModel),
+      typeof(IRegistryClassViewModel),
       typeof(MainWindow),
       new PropertyMetadata(new RegistryClassViewModel())
     );
@@ -40,8 +40,34 @@ namespace CLSID_Viewer {
     public MainWindow() {
       InitializeComponent();
       var modelView = ModelView;
-      StatusText.Text = "Loading classes";
-      Task.Run(() => AsyncInitialization(modelView));
+      modelView.TaskStarted += OnTaskStarted;
+      Task.Run(modelView.Initialize)
+          .ContinueWith(task => OnInitializationDone());
+    }
+
+
+
+    private readonly TimeSpan _interval = TimeSpan.FromMilliseconds(250);
+
+
+
+    private void OnTaskStarted(Progress<ProgressInfo> progress) {
+      var updateTime = DateTime.Now;
+
+      Dispatcher.Invoke(() => ProgressBar.Visibility = Visibility.Visible);
+      progress.ProgressChanged += (sender, progressInfo) => {
+                                    var now = DateTime.Now;
+                                    if (now - updateTime > _interval) {
+                                      updateTime = now;
+                                      Dispatcher.InvokeAsync(
+                                        () => {
+                                          StatusText.Text = progressInfo.Name;
+                                          ProgressBar.Value = progressInfo.Value;
+                                          ProgressBar.Maximum = progressInfo.Count;
+                                        }
+                                      );
+                                    }
+                                  };
     }
     // ModelView.SelectionChanged += SelectionChanged;
 
@@ -51,33 +77,13 @@ namespace CLSID_Viewer {
 
 
 
-    private void AsyncInitialization(RegistryClassViewModel modelView) {
-      var interval = TimeSpan.FromMilliseconds(250);
-      var updateTime = DateTime.Now;
-
-      var progress = new Progress<(int value, int max)>();
-      progress.ProgressChanged += (object? sender, (int i, int n) progressValues) => {
-                                    if (progressValues.i >= progressValues.n) {
-                                      OnInitializationDone();
-                                    }
-
-                                    var now = DateTime.Now;
-                                    if (now - updateTime > interval) {
-                                      updateTime = now;
-                                      Dispatcher.InvokeAsync(() => ProgressBar.Value = progressValues.i);
-                                    }
-                                  };
-      modelView.LoadClasses(progress);
-    }
-
-
-
     private void OnInitializationDone() =>
       Dispatcher.Invoke(
         () => {
-          ProgressBar.Value = 100;
+          // ProgressBar.Value = 100;
           ProgressBar.Visibility = Visibility.Collapsed;
           StatusText.Text = "done";
+          AddressBar.ItemsSource = ModelView.Items; //TODO this should by replaced INotifyPropertyChanged
         }
       );
 
@@ -94,7 +100,7 @@ namespace CLSID_Viewer {
     private void UpdatePreview(RegistryClass regClass) {
       // var classId = ClsidInput.Text;
       if (regClass == default) {
-        ShowError("Class not found", ClsidInput.Text);
+        ShowError("Class not found", AddressBar.Text);
         return;
       }
 
@@ -113,31 +119,32 @@ namespace CLSID_Viewer {
 
 
 
-    private void ShowError(string title, string message) => _notificationManager.ShowAsync(
-      new NotificationContent {Title = title, Message = message},
-      nameof(Notification)
-    );
+    private void ShowError(string title, string message) =>
+      _notificationManager.ShowAsync(
+        new NotificationContent {Title = title, Message = message, Type = NotificationType.Error},
+        nameof(Notification)
+      );
 
 
 
-    private void Button_Click(object sender, RoutedEventArgs e) => UpdatePreview(
-      Registry.OpenKey(ClsidInput.Text) is {} registryKey
-        ? new RegistryClass(registryKey)
-        : default
-    );
+    private void Button_Click(object sender, RoutedEventArgs e) =>
+      UpdatePreview(
+        Registry.OpenKey(AddressBar.Text) is { } registryKey
+          ? new RegistryClass(registryKey)
+          : default
+      );
 
 
 
-    private void MetroWindow_SizeChanged(object sender, SizeChangedEventArgs e) =>
-      ClsidInput.Width = Width - 400;
+    private void MetroWindow_SizeChanged(object sender, SizeChangedEventArgs e) => AddressBar.Width = Width - 400;
 
 
 
     private void ClsidInput_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      ModelView.SelectedClass = e.AddedItems.Count > 0 &&
-                                e.AddedItems[0] is RegistryClass registryClass
-                                  ? registryClass
-                                  : default;
+      ModelView.SelectedItem = e.AddedItems.Count > 0 &&
+                               e.AddedItems[0] is SearchItem registryClass
+                                 ? registryClass
+                                 : default;
       e.Handled = true;
     }
   }

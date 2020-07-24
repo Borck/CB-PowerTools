@@ -10,37 +10,52 @@
                  xmlns:controls1="clr-namespace:System.Windows.Controls;assembly=DotNetProjects.Input.Toolkit"
                  mc:Ignorable="d"
                  Height="600" Width="1000" Icon="icon.ico" SizeChanged="MetroWindow_SizeChanged" MinWidth=" 500"
-                 MinHeight="300">
+                 MinHeight="300"
+                 RenderOptions.BitmapScalingMode="{Binding IconBitmapScalingMode, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type mah:MetroWindow}}}"
+                 RenderOptions.EdgeMode="{Binding IconEdgeMode, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type mah:MetroWindow}}}">
   <Window.Resources>
     <local:ValueEvaluationConverter x:Key="ValueEvaluationConverter" />
-    <local:RegistryClassViewModel x:Key="ViewModel" />
     <Style TargetType="Image" x:Key="SquareImage">
       <Setter Property="Height" Value="{Binding ActualWidth, RelativeSource={RelativeSource Self}}" />
     </Style>
+    <Style x:Key="AutoCompleteBoxStyle" TargetType="{x:Type controls1:AutoCompleteBox}">
+      <!-- Fixes the performance is by using virtualization of the ListBox and reducing its max height
+      https://www.broculos.net/2014/04/wpf-how-to-improve-performance-of.html
+      -->
+      <Style.Resources>
+        <Style TargetType="{x:Type ListBox}">
+          <Setter Property="MaxHeight" Value="200" />
+        </Style>
+      </Style.Resources>
+    </Style>
   </Window.Resources>
+  <Window.DataContext>
+    <local:RegistryClassViewModel x:Name="ViewModel" />
+
+  </Window.DataContext>
   <mah:MetroWindow.LeftWindowCommands>
-    <mah:WindowCommands HorizontalAlignment="Stretch">
-      <Separator VerticalAlignment="Stretch" Margin="5,0" Foreground="Transparent" />
-      <StackPanel Margin="5,0,0,0" Orientation="Horizontal">
-        <controls1:AutoCompleteBox x:Name="ClsidInput" KeyUp="ClsidInput_KeyUp"
+    <mah:WindowCommands HorizontalAlignment="Stretch" ShowSeparators="False">
+      <StackPanel Margin="5,0" Orientation="Horizontal">
+        <controls1:AutoCompleteBox x:Name="AddressBar" KeyUp="ClsidInput_KeyUp"
                                    VerticalAlignment="Center" HorizontalAlignment="Stretch"
-                                   DataContext="{StaticResource ViewModel}"
-                                   ItemsSource="{Binding Classes}"
-                                   SelectedItem="{Binding SelectedClass, Mode=TwoWay}"
+                                   Style="{StaticResource AutoCompleteBoxStyle}"
+                                   ItemsSource="{Binding Items, Mode=OneWay}"
+                                   SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                    ItemFilter="{Binding Filter}"
+                                   Text="{Binding SearchText, Mode=TwoWay}"
                                    Width="300"
                                    Height="24"
                                    Cursor="IBeam"
                                    mah:TextBoxHelper.Watermark="{}{20D04FE0-3AEA-1069-A2D8-08002B30309D} or any class ID"
                                    SelectionChanged="ClsidInput_SelectionChanged">
           <controls1:AutoCompleteBox.ItemTemplate>
-            <DataTemplate DataType="{x:Type local:RegistryClass}">
+            <DataTemplate DataType="{x:Type local:SearchItem}">
               <StackPanel Orientation="Horizontal">
                 <Label
                   Content="{Binding Id}"
                   Width="300" />
                 <Label
-                  Content="{Binding LocalizedName}"
+                  Content="{Binding Name}"
                   FontStyle="Italic"
                   Foreground="DarkGray" />
               </StackPanel>
@@ -62,7 +77,7 @@
       <StatusBarItem>
         <StackPanel Orientation="Horizontal">
           <ProgressBar x:Name="ProgressBar" Minimum="0" Maximum="100" Value="75" Width="100" Height="5"
-                       BorderThickness="0" />
+                       BorderThickness="0" Visibility="Collapsed" />
           <TextBlock x:Name="StatusText" />
         </StackPanel>
       </StatusBarItem>
@@ -81,7 +96,7 @@
           <RowDefinition Height="Auto" />
           <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <controls:NotificationArea x:Name="Notification" Position="BottomRight" MaxItems="3" />
+        <controls:NotificationArea x:Name="Notification" Position="BottomRight" MaxItems="1" />
         <Grid Grid.Row="0" Margin="5">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -105,7 +120,7 @@
       </Grid>
       <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
       <StackPanel Grid.Column="2" Margin="5"
-                  DataContext="{Binding Source={StaticResource ViewModel}, Path=SelectedClass}">
+                  DataContext="{Binding SelectedClass}">
         <Label x:Name="NameLabel" FontSize="20" Height="36" />
         <Border BorderThickness="1">
           <Image x:Name="DefaultIconImage" Style="{StaticResource SquareImage}"
