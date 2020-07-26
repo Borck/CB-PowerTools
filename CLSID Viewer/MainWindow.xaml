@@ -86,9 +86,9 @@
     <Grid>
 
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="3*" />
+        <ColumnDefinition Width="3*" MinWidth="10" />
         <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" MinWidth="10" />
       </Grid.ColumnDefinitions>
       <Grid Grid.Column="0">
         <Grid.RowDefinitions>
