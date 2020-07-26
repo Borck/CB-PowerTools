@@ -66,7 +66,7 @@ namespace CLSID_Viewer.Search {
 
 
 
-    private void SearchTextProviderOnSearchTextChanged(object? sender, string searchText) {
+    private void SearchTextProviderOnSearchTextChanged(object sender, string searchText) {
       if (searchText?.StartsWith(Registryy.REGKEY_IGNORE_PREFIX_COMPUTER) ?? false) {
         searchText = searchText.Remove(0, Registryy.REGKEY_IGNORE_PREFIX_COMPUTER.Length);
       }
@@ -118,5 +118,9 @@ namespace CLSID_Viewer.Search {
     [NotifyPropertyChangedInvocator]
     protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+
+
+    protected virtual void OnTaskStarted(Progress<ProgressInfo> progress) => TaskStarted?.Invoke(progress);
   }
 }
