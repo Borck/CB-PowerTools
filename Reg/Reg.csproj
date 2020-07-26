@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>CLSID_Viewer</RootNamespace>
+    <RootNamespace>CB.Tools</RootNamespace>
     <UseWPF>true</UseWPF>
     <Version>0.3.1-Preview1</Version>
     <Authors>Christian Borck</Authors>
@@ -11,7 +11,7 @@
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/Borck/CB-PowerTools</PackageProjectUrl>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    <PackageId>CLSID-Viewer</PackageId>
+    <PackageId>Reg</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
