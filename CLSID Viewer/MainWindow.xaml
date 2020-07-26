@@ -40,7 +40,7 @@
                                    VerticalAlignment="Center" HorizontalAlignment="Stretch"
                                    Style="{StaticResource AutoCompleteBoxStyle}"
                                    ItemsSource="{Binding Items, Mode=OneWay}"
-                                   SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                   SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
                                    ItemFilter="{Binding Filter}"
                                    Text="{Binding SearchText, Mode=TwoWay}"
                                    Width="300"

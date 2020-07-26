@@ -6,15 +6,16 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using CB.System.Collections;
+using CLSID_Viewer.Search;
 using JetBrains.Annotations;
-using Microsoft.Win32;
 
 
 
 namespace CLSID_Viewer {
-  public class RegistryClassViewModel : IRegistryClassViewModel {
-    private const string IgnoreComputerPrefix = "Computer\\";
+  public class RegistryClassViewModel : IRegistryClassViewModel, ISearchTextProvider {
+    private readonly ISearchItemProvider[] _itemProviders = {new ClassSearchItemProvider()};
 
+    private ISearchItemProvider _exclusiveItemsProvider;
 
     public bool IsInitialized {
       get => _isInitialized;
@@ -24,16 +25,20 @@ namespace CLSID_Viewer {
       }
     }
 
-    private readonly IList<SearchItem> _items = new List<SearchItem>();
 
-    public IEnumerable<SearchItem> Items => _items;
+    public IEnumerable<SearchItem> Items =>
+      _exclusiveItemsProvider != default
+        ? _exclusiveItemsProvider.Items
+        : _itemProviders.SelectMany(provider => provider.Items ?? Array.Empty<SearchItem>());
+
 
 
     public SearchItem SelectedItem {
       get => _selectedItem;
       set {
-        var key = value != default
-                    ? new RegistryClass(CB.Win32.Registry.Registry.OpenKey(value.Id))
+        var key = value != default &&
+                  Registryy.TryOpenRegistryKey(value.Id, out var registryKey)
+                    ? new RegistryClass(registryKey)
                     : default;
         _selectedItem = value;
         SelectedClass = key;
@@ -64,33 +69,74 @@ namespace CLSID_Viewer {
       get => _searchText;
       set {
         _searchText = value;
-        UpdateSearchTargets(value);
         OnPropertyChanged();
+
+        SearchTextChanged?.Invoke(this, value);
+        UpdateExclusiveProvider(value);
       }
     }
 
 
 
-    private RegistrySearchTargets _targets;
+    public event EventHandler<string> SearchTextChanged;
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
     private string _searchText;
 
+    private RegistryClass _selectedClass;
 
 
-    private void UpdateSearchTargets(string searchString) {
-      if (string.IsNullOrWhiteSpace(searchString)) {
-        _targets = RegistrySearchTargets.None;
-        return;
+    public StringComparison StringComparison = StringComparison.InvariantCultureIgnoreCase;
+    private SearchItem _selectedItem;
+    private bool _isInitialized;
+
+
+
+    [DllImport("kernel32.dll")]
+    private static extern ErrorModes SetErrorMode(ErrorModes errorMode);
+
+
+
+    private void UpdateExclusiveProvider(string searchText) {
+      var exclusiveProvider = _itemProviders.FirstOrDefault(provider => provider.IsExclusiveHandle(searchText));
+      var exclusiveProviderChanged = !Equals(exclusiveProvider, _exclusiveItemsProvider);
+      _exclusiveItemsProvider = exclusiveProvider;
+      if (exclusiveProviderChanged) {
+        OnPropertyChanged(nameof(Items));
       }
-
-      if (searchString.StartsWith(IgnoreComputerPrefix, StringComparison.InvariantCultureIgnoreCase)) {
-        searchString = searchString.Substring(IgnoreComputerPrefix.Length);
-      }
-
-      _targets = RegistrySearchTargets.Clsid |
-                 (searchString.Contains('\\')
-                    ? RegistrySearchTargets.Key
-                    : RegistrySearchTargets.Hive);
     }
+
+
+
+    public void Initialize() {
+      if (IsInitialized) {
+        throw new ArgumentException("View model is already initialized");
+      }
+
+      SetErrorMode(ErrorModes.SEM_FAILCRITICALERRORS);
+      _itemProviders.ForEach(InitializeProvider);
+
+      IsInitialized = true;
+    }
+
+
+
+    private void SearchProvider_OnTaskStarted(Progress<ProgressInfo> progress) => TaskStarted?.Invoke(progress);
+
+
+
+    private void InitializeProvider(ISearchItemProvider searchItemProvider) {
+      searchItemProvider.SearchTextProvider = this;
+      searchItemProvider.TaskStarted += SearchProvider_OnTaskStarted;
+      searchItemProvider.Update();
+    }
+
+
+
+    [NotifyPropertyChangedInvocator]
+    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
 
 
@@ -102,98 +148,5 @@ namespace CLSID_Viewer {
       SEM_NOGPFAULTERRORBOX = 0x0002,
       SEM_NOOPENFILEERRORBOX = 0x8000
     }
-
-
-
-    [DllImport("kernel32.dll")]
-    private static extern ErrorModes SetErrorMode(ErrorModes errorMode);
-
-
-
-    public void Initialize() {
-      if (IsInitialized) {
-        throw new ArgumentException("View model is already initialized");
-      }
-
-      SetErrorMode(ErrorModes.SEM_FAILCRITICALERRORS);
-      var progress = new Progress<ProgressInfo>();
-      TaskStarted?.Invoke(progress);
-      LoadClasses(progress);
-      IsInitialized = true;
-    }
-
-
-
-    private readonly RegistryKey _clsidKey = Registry.ClassesRoot.OpenSubKey("CLSID");
-    private RegistryClass _selectedClass;
-
-    public IEnumerable<string> ClassNames => _clsidKey.GetSubKeyNames()
-                                                      .Where(name => name.StartsWith('{') && name.EndsWith('}'));
-
-    private readonly object _classesLock = new object();
-    public StringComparison StringComparison = StringComparison.InvariantCultureIgnoreCase;
-    private SearchItem _selectedItem;
-    private bool _isInitialized;
-
-
-
-    public void ClearSearchCache() {
-      _items.Clear();
-      OnPropertyChanged(nameof(Items));
-      IsInitialized = false;
-    }
-
-
-
-    public void LoadClasses(IProgress<ProgressInfo> progress) {
-      lock (_classesLock) {
-        if (IsInitialized) {
-          return;
-        }
-
-        var classNames = ClassNames.ToList();
-        var i = 0;
-        var n = classNames.Count;
-        _items.AddRange(
-          classNames
-            .Select(
-              name => {
-                var regClass = CreateSearchItem(new RegistryClass(_clsidKey.OpenSubKey(name)));
-                progress.Report(new ProgressInfo("Load Classes", ++i, n));
-                return regClass;
-              }
-            )
-        );
-        OnPropertyChanged(nameof(Items));
-      }
-    }
-
-
-
-    private static SearchItem CreateSearchItem(RegistryClass registryClass) => new SearchItem(
-      registryClass.Id,
-      registryClass.LocalizedName,
-      registryClass.DefaultName
-    );
-
-
-
-    [Flags]
-    public enum RegistrySearchTargets {
-      None = 0,
-      Hive = 1 << 0,
-      Key = 1 << 1,
-      Clsid = 1 << 2
-    }
-
-
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-
-
-    [NotifyPropertyChangedInvocator]
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
   }
 }

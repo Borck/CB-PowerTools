@@ -17,18 +17,6 @@ namespace CLSID_Viewer {
     private const int DefaultRegistryDepth = 5;
 
 
-    private static readonly DependencyProperty ModelViewProperty = DependencyProperty.Register(
-      nameof(ModelView),
-      typeof(IRegistryClassViewModel),
-      typeof(MainWindow),
-      new PropertyMetadata(new RegistryClassViewModel())
-    );
-
-    private RegistryClassViewModel ModelView {
-      get => (RegistryClassViewModel)GetValue(ModelViewProperty);
-      set => SetValue(ModelViewProperty, value);
-    }
-
 
     /// <summary>
     ///   Interaction logic for MainWindow.xaml
@@ -39,9 +27,8 @@ namespace CLSID_Viewer {
 
     public MainWindow() {
       InitializeComponent();
-      var modelView = ModelView;
-      modelView.TaskStarted += OnTaskStarted;
-      Task.Run(modelView.Initialize)
+      ViewModel.TaskStarted += OnTaskStarted;
+      Task.Run(ViewModel.Initialize)
           .ContinueWith(task => OnInitializationDone());
     }
 
@@ -83,7 +70,7 @@ namespace CLSID_Viewer {
           // ProgressBar.Value = 100;
           ProgressBar.Visibility = Visibility.Collapsed;
           StatusText.Text = "done";
-          AddressBar.ItemsSource = ModelView.Items; //TODO this should by replaced INotifyPropertyChanged
+          AddressBar.ItemsSource = ViewModel.Items; //TODO this should by replaced INotifyPropertyChanged
         }
       );
 
@@ -91,7 +78,7 @@ namespace CLSID_Viewer {
 
     private void ClsidInput_KeyUp(object sender, KeyEventArgs e) {
       if (e.Key.Equals(Key.Enter)) {
-        UpdatePreview(ModelView.SelectedClass);
+        UpdatePreview(ViewModel.SelectedClass);
       }
     }
 
@@ -141,7 +128,7 @@ namespace CLSID_Viewer {
 
 
     private void ClsidInput_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      ModelView.SelectedItem = e.AddedItems.Count > 0 &&
+      ViewModel.SelectedItem = e.AddedItems.Count > 0 &&
                                e.AddedItems[0] is SearchItem registryClass
                                  ? registryClass
                                  : default;
