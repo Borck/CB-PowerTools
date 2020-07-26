@@ -58,6 +58,7 @@ namespace CLSID_Viewer.Search {
     public bool IsExclusiveHandle(string searchText)
       => Registryy.TryGetNormalized(searchText, out RegistryHive hive, out var subKeyName) &&
          hive == RegistryHive.ClassesRoot &&
+         subKeyName != default &&
          subKeyName.TrySeparateLast(Registryy.PathSeparator, out var subPath, out _) &&
          Clsid.Equals(subPath, StringComparison.InvariantCultureIgnoreCase);
 
