@@ -70,7 +70,7 @@ namespace CLSID_Viewer {
           // ProgressBar.Value = 100;
           ProgressBar.Visibility = Visibility.Collapsed;
           StatusText.Text = "done";
-          AddressBar.ItemsSource = ViewModel.Items; //TODO this should by replaced INotifyPropertyChanged
+          // AddressBar.ItemsSource = ViewModel.Items; //TODO this should by replaced INotifyPropertyChanged
         }
       );
 

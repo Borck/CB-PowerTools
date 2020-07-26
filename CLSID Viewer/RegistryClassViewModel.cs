@@ -13,7 +13,9 @@ using JetBrains.Annotations;
 
 namespace CLSID_Viewer {
   public class RegistryClassViewModel : IRegistryClassViewModel, ISearchTextProvider {
-    private readonly ISearchItemProvider[] _itemProviders = {new ClassSearchItemProvider()};
+    private readonly ISearchItemProvider[] _itemProviders = {
+      new ClassSearchItemProvider(), new PathSearchItemProvider()
+    };
 
     private ISearchItemProvider _exclusiveItemsProvider;
 
@@ -122,14 +124,24 @@ namespace CLSID_Viewer {
 
 
 
-    private void SearchProvider_OnTaskStarted(Progress<ProgressInfo> progress) => TaskStarted?.Invoke(progress);
-
-
-
     private void InitializeProvider(ISearchItemProvider searchItemProvider) {
       searchItemProvider.SearchTextProvider = this;
-      searchItemProvider.TaskStarted += SearchProvider_OnTaskStarted;
+      searchItemProvider.TaskStarted += SearchItemProvider_OnTaskStarted;
+      searchItemProvider.PropertyChanged += SearchItemProvider_OnPropertyChanged;
       searchItemProvider.Update();
+    }
+
+
+
+    private void SearchItemProvider_OnTaskStarted(Progress<ProgressInfo> progress) => TaskStarted?.Invoke(progress);
+
+
+
+    private void SearchItemProvider_OnPropertyChanged(object sender, PropertyChangedEventArgs e) {
+      if (e.PropertyName == "Items") {
+        OnPropertyChanged("Items");
+        // PropertyChanged?.Invoke(sender, e);
+      }
     }
 
 

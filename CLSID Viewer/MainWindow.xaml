@@ -39,7 +39,7 @@
         <controls1:AutoCompleteBox x:Name="AddressBar" KeyUp="ClsidInput_KeyUp"
                                    VerticalAlignment="Center" HorizontalAlignment="Stretch"
                                    Style="{StaticResource AutoCompleteBoxStyle}"
-                                   ItemsSource="{Binding Items, Mode=OneWay}"
+                                   ItemsSource="{Binding Items}"
                                    SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
                                    ItemFilter="{Binding Filter}"
                                    Text="{Binding SearchText, Mode=TwoWay}"
