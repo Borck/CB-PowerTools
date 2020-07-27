@@ -103,6 +103,8 @@ namespace CBT.Reg {
                                 ?.ToImageSource();
       NameLabel.Content = regClass.LocalizedName;
       InfoTipText.Text = regClass.InfoTip;
+
+      ExportView.EncodingManager.RegistryKeyName = regClass.Id;
     }
 
 

@@ -18,8 +18,8 @@ namespace CBT.Reg.Export {
 
     private readonly IDictionary<string, IRegistryDataEncoder> _encoders;
     private string _selectedEncoder;
-    private string _encodedData;
-    private string _registryKeyName;
+    private string _encodedData = string.Empty;
+    private string _registryKeyName = string.Empty;
     private int _maxRecursionDepth;
 
     public ICollection<string> Encoders => _encoders.Keys;
@@ -64,6 +64,16 @@ namespace CBT.Reg.Export {
         _encodedData = value;
         OnPropertyChanged();
       }
+    }
+
+
+
+    public EncodingManager() {
+      _encoders = EncoderTypes.ToDictionary(
+        type => type.name,
+        type => (IRegistryDataEncoder)Activator.CreateInstance(type.encoderType)
+      );
+      _selectedEncoder = _encoders.Select(encoder => encoder.Key).FirstOrDefault();
     }
 
 
@@ -133,14 +143,8 @@ namespace CBT.Reg.Export {
           type => type.TryGetCustomAttribute<RegistryDataEncoderAttribute>(false, out var attr)
                     ? (attr.Name, type)
                     : default
-        );
-
-
-
-    public EncodingManager() => _encoders = EncoderTypes.ToDictionary(
-                                  type => type.name,
-                                  type => (IRegistryDataEncoder)Activator.CreateInstance(type.encoderType)
-                                );
+        )
+        .Where(nameType => nameType != default);
 
 
 
