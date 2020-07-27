@@ -5,11 +5,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CB.Win32.Registry;
 using CB.WPF.Drawing;
+using CBT.Reg.Search;
 using Notifications.Wpf.Core;
 
 
 
-namespace CLSID_Viewer {
+namespace CBT.Reg {
   /// <summary>
   ///   Interaction logic for MainWindow.xaml
   /// </summary>

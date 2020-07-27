@@ -8,7 +8,7 @@ using Microsoft.Win32;
 
 
 
-namespace CLSID_Viewer {
+namespace CBT.Reg {
   public class RegistryClass {
     private static readonly ResourceStrings ResStringsCache = ResourceStrings.Default;
 

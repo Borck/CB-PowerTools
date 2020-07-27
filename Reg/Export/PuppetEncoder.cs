@@ -6,7 +6,7 @@ using Registry = CB.Win32.Registry.Registry;
 
 
 
-namespace CB.Tools.Export {
+namespace CBT.Reg.Export {
   public class PuppetEncoder : IRegistryDataEncoder {
     private RegistryKey _key;
     private string _keyName;

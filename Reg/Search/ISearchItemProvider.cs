@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 
 
-namespace CLSID_Viewer.Search {
+namespace CBT.Reg.Search {
   public interface ISearchItemProvider : INotifyPropertyChanged {
     public ISearchTextProvider SearchTextProvider { get; set; }
     public ICollection<SearchItem> Items { get; }

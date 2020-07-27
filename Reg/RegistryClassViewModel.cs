@@ -6,12 +6,12 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using CB.System.Collections;
-using CLSID_Viewer.Search;
+using CBT.Reg.Search;
 using JetBrains.Annotations;
 
 
 
-namespace CLSID_Viewer {
+namespace CBT.Reg {
   public class RegistryClassViewModel : IRegistryClassViewModel, ISearchTextProvider {
     private readonly ISearchItemProvider[] _itemProviders = {
       new ClassSearchItemProvider(), new PathSearchItemProvider()

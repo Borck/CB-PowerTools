@@ -6,7 +6,7 @@ using CB.WPF.Drawing;
 
 
 
-namespace CLSID_Viewer {
+namespace CBT.Reg {
   public class MediaImageConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
       value is Icon icon

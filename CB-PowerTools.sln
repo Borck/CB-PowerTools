@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiNK Creator", "LiNK Creato
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Registry Exporter", "Registry Exporter\Registry Exporter.csproj", "{4618CDFB-0B3E-4B7C-94F3-99BF54F0B9B4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reg", "Reg\Reg.csproj", "{DD09DE42-96B3-4936-9BB0-73E19168FA5D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reg", "Reg\Reg.csproj", "{91E9EC7F-8286-4DDC-B2C7-2D832091D1BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,10 +34,10 @@ Global
 		{4618CDFB-0B3E-4B7C-94F3-99BF54F0B9B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4618CDFB-0B3E-4B7C-94F3-99BF54F0B9B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4618CDFB-0B3E-4B7C-94F3-99BF54F0B9B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD09DE42-96B3-4936-9BB0-73E19168FA5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD09DE42-96B3-4936-9BB0-73E19168FA5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD09DE42-96B3-4936-9BB0-73E19168FA5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD09DE42-96B3-4936-9BB0-73E19168FA5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91E9EC7F-8286-4DDC-B2C7-2D832091D1BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91E9EC7F-8286-4DDC-B2C7-2D832091D1BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91E9EC7F-8286-4DDC-B2C7-2D832091D1BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91E9EC7F-8286-4DDC-B2C7-2D832091D1BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

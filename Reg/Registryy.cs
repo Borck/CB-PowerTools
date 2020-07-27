@@ -7,7 +7,7 @@ using static Microsoft.Win32.Registry;
 
 
 
-namespace CLSID_Viewer {
+namespace CBT.Reg {
   public class Registryy {
     private const string DEF_SEP = "\\";
     public static readonly char PathSeparator = DEF_SEP[0];

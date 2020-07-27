@@ -1,4 +1,4 @@
-﻿namespace CLSID_Viewer {
+﻿namespace CBT.Reg {
   public class ProgressInfo {
     public readonly string Name;
     public readonly int Value;

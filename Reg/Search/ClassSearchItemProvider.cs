@@ -9,7 +9,7 @@ using Microsoft.Win32;
 
 
 
-namespace CLSID_Viewer.Search {
+namespace CBT.Reg.Search {
   public class ClassSearchItemProvider : ISearchItemProvider {
     private const string Clsid = "CLSID";
     private readonly RegistryKey _clsidKey = Registry.ClassesRoot.OpenSubKey(Clsid);

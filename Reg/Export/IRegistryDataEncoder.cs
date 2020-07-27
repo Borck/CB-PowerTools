@@ -2,7 +2,7 @@
 
 
 
-namespace CB.Tools.Export {
+namespace CBT.Reg.Export {
   public interface IRegistryDataEncoder {
     void SetCurrentKey(RegistryKey key);
 

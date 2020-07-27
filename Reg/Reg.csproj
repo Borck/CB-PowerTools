@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>CB.Tools</RootNamespace>
+    <RootNamespace>CBT.Reg</RootNamespace>
     <UseWPF>true</UseWPF>
     <Version>0.3.1-Preview1</Version>
     <Authors>Christian Borck</Authors>

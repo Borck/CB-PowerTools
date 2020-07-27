@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 
 
-namespace CLSID_Viewer {
+namespace CBT.Reg {
   public class ResourceStrings {
     public static readonly ResourceStrings Default = new ResourceStrings();
 

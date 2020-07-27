@@ -2,7 +2,7 @@
 
 
 
-namespace CB.Tools.Export {
+namespace CBT.Reg.Export {
   [AttributeUsage(AttributeTargets.Class)]
   public class RegistryDataEncoderAttribute : Attribute {
     public string Name;

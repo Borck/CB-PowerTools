@@ -1,5 +1,4 @@
-﻿namespace CB.Tools.Export
-{
+﻿namespace CBT.Reg.Export {
   public enum OutputType {
     Text
   }

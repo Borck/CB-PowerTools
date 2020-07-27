@@ -3,7 +3,7 @@ using System.Linq;
 
 
 
-namespace CLSID_Viewer {
+namespace CBT.Reg.Search {
   [DebuggerDisplay(
     nameof(Id) +
     " = {" +

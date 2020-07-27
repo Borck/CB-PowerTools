@@ -6,7 +6,7 @@ using NLog;
 
 
 
-namespace CLSID_Viewer {
+namespace CBT.Reg {
   /// <summary>
   ///   Interaction logic for App.xaml
   /// </summary>

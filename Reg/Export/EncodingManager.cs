@@ -6,13 +6,12 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using CB.System;
 using CB.System.Reflection;
-using CLSID_Viewer;
 using JetBrains.Annotations;
 using Microsoft.Win32;
 
 
 
-namespace CB.Tools.Export {
+namespace CBT.Reg.Export {
   public class EncodingManager : INotifyPropertyChanged {
     private static readonly ICollection<(string name, Type encoderType)> EncoderTypes = GetEncoders().ToList();
 

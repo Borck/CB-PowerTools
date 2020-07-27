@@ -5,7 +5,7 @@ using CB.Win32;
 
 
 
-namespace CLSID_Viewer {
+namespace CBT.Reg {
   public class ValueEvaluationConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       var valueText = value as string;

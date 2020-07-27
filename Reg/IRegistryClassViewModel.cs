@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
+using CBT.Reg.Search;
 
 
 
-namespace CLSID_Viewer {
+namespace CBT.Reg {
   public interface IRegistryClassViewModel : INotifyPropertyChanged {
     public void Initialize();
 

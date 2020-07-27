@@ -9,7 +9,7 @@ using Microsoft.Win32;
 
 
 
-namespace CLSID_Viewer.Search {
+namespace CBT.Reg.Search {
   public class PathSearchItemProvider : ISearchItemProvider {
     private string _regParent;
     private readonly SearchItem[] _hiveItems;
