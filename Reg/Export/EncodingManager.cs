@@ -12,6 +12,11 @@ using Microsoft.Win32;
 
 
 namespace CBT.Reg.Export {
+  //TODO adding some benchmark paths like HKCU\Software
+  //TODO add concurrency if required
+
+
+
   public class EncodingManager : INotifyPropertyChanged {
     private static readonly ICollection<(string name, Type encoderType)> EncoderTypes = GetEncoders().ToList();
 
@@ -87,7 +92,7 @@ namespace CBT.Reg.Export {
       }
 
       encoder.Clear();
-      ExtractRegKeyToPuppetTextRecursive(encoder, key, MaxRecursionDepth - 1);
+      ExtractRegKeyToPuppetTextRecursive(encoder, key, MaxRecursionDepth);
       encoder.Complete();
       EncodedData = encoder.GetEncodedData();
     }
