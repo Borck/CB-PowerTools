@@ -12,6 +12,7 @@ using JetBrains.Annotations;
 
 
 namespace CBT.Reg {
+  //TODO test on CLSID sub key in search text, i.e. "HKCR\CLSID\{...}\"
   public class RegistryClassViewModel : IRegistryClassViewModel, ISearchTextProvider {
     private readonly ISearchItemProvider[] _itemProviders = {
       new ClassSearchItemProvider(), new PathSearchItemProvider()

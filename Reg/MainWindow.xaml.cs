@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CB.Win32.Registry;
-using CB.WPF.Drawing;
 using CBT.Reg.Search;
 using Notifications.Wpf.Core;
 
@@ -86,24 +85,12 @@ namespace CBT.Reg {
 
 
     private void UpdatePreview(RegistryClass regClass) {
-      // var classId = ClsidInput.Text;
       if (regClass == default) {
         ShowError("Class not found", AddressBar.Text);
         return;
       }
 
-      var keyValuesItems = KeyValuesList.Items;
-      keyValuesItems.Clear();
-      foreach (var keyValue in regClass.GetRegistryValues(DefaultRegistryDepth)) {
-        keyValuesItems.Add(keyValue);
-      }
-
-      DefaultIconImage.Source = regClass
-                                ?.GetDefaultIcon((int)DefaultIconImage.ActualWidth, (int)DefaultIconImage.ActualHeight)
-                                ?.ToImageSource();
-      NameLabel.Content = regClass.LocalizedName;
-      InfoTipText.Text = regClass.InfoTip;
-
+      ValueView.ViewModel.SelectedKeyName = regClass.Id;
       ExportView.EncodingManager.RegistryKeyName = regClass.Id;
     }
 
