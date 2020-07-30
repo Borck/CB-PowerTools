@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using CB.System;
 using CB.Win32;
 using JetBrains.Annotations;
@@ -11,6 +12,8 @@ using Microsoft.Win32;
 namespace CBT.Reg {
   public class RegistryClass {
     private static readonly ResourceStrings ResStringsCache = ResourceStrings.Default;
+
+    public static int MaxValuesPerKey { get; set; } = 10_000;
 
 
     [NotNull]
@@ -152,7 +155,7 @@ namespace CBT.Reg {
       RegistryKey registryKey,
       IDictionary<string, string> registryKeyValues,
       string prefix = "") {
-      foreach (var valueName in registryKey.GetValueNames()) {
+      foreach (var valueName in registryKey.GetValueNames().Take(MaxValuesPerKey)) {
         var valueNameGlobal = prefix + valueName;
         var value = registryKey.GetValue(valueName).ToString();
         registryKeyValues.Add(valueNameGlobal, value);

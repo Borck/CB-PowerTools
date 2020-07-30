@@ -20,6 +20,7 @@ namespace CBT.Reg.Export {
   public class EncodingManager : INotifyPropertyChanged {
     private static readonly ICollection<(string name, Type encoderType)> EncoderTypes = GetEncoders().ToList();
 
+    public int MaxValuesPerKey { get; set; } = 10_000;
 
     private readonly IDictionary<string, IRegistryDataEncoder> _encoders;
     private string _selectedEncoder;
@@ -99,16 +100,16 @@ namespace CBT.Reg.Export {
 
 
 
-    private static void ExtractRegKeyToPuppetTextRecursive(IRegistryDataEncoder encoder,
-                                                           RegistryKey key,
-                                                           int maxRecursionDepth) {
+    private void ExtractRegKeyToPuppetTextRecursive(IRegistryDataEncoder encoder,
+                                                    RegistryKey key,
+                                                    int maxRecursionDepth) {
       AppendRegKeyToPuppetText(encoder, key);
       if (maxRecursionDepth <= 0) {
         return;
       }
 
       maxRecursionDepth--;
-      foreach (var subKeyName in key.GetSubKeyNames()) {
+      foreach (var subKeyName in key.GetSubKeyNames().Take(MaxValuesPerKey)) {
         using var subRegKey = key.OpenSubKey(subKeyName);
         ExtractRegKeyToPuppetTextRecursive(encoder, subRegKey, maxRecursionDepth);
       }
