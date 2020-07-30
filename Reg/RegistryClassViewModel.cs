@@ -140,7 +140,7 @@ namespace CBT.Reg {
 
     private void SearchItemProvider_OnPropertyChanged(object sender, PropertyChangedEventArgs e) {
       if (e.PropertyName == "Items") {
-        OnPropertyChanged("Items");
+        OnPropertyChanged(nameof(Items));
         // PropertyChanged?.Invoke(sender, e);
       }
     }

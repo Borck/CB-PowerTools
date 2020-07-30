@@ -1,36 +1,22 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using CB.Win32.Registry;
-using CBT.Reg.Search;
-using Notifications.Wpf.Core;
 
 
 
 namespace CBT.Reg {
-  /// <summary>
-  ///   Interaction logic for MainWindow.xaml
-  /// </summary>
   public partial class MainWindow {
-    private const int DefaultRegistryDepth = 5;
-
-
-
-    /// <summary>
-    ///   Interaction logic for MainWindow.xaml
-    /// </summary>
-    private readonly NotificationManager _notificationManager = new NotificationManager();
-
-
-
     public MainWindow() {
       InitializeComponent();
-      ViewModel.TaskStarted += OnTaskStarted;
-      Task.Run(ViewModel.Initialize)
+      AddressBar.Selection += OnSelection;
+      AddressBar.ViewModel.TaskStarted += OnTaskStarted;
+      Task.Run(AddressBar.ViewModel.Initialize)
           .ContinueWith(task => OnInitializationDone());
     }
+
+
+
+    private void OnSelection(object? sender, RegistryClass regClass) => UpdatePreview(regClass);
 
 
 
@@ -76,17 +62,8 @@ namespace CBT.Reg {
 
 
 
-    private void ClsidInput_KeyUp(object sender, KeyEventArgs e) {
-      if (e.Key.Equals(Key.Enter)) {
-        UpdatePreview(ViewModel.SelectedClass);
-      }
-    }
-
-
-
     private void UpdatePreview(RegistryClass regClass) {
       if (regClass == default) {
-        ShowError("Class not found", AddressBar.Text);
         return;
       }
 
@@ -96,33 +73,6 @@ namespace CBT.Reg {
 
 
 
-    private void ShowError(string title, string message) =>
-      _notificationManager.ShowAsync(
-        new NotificationContent {Title = title, Message = message, Type = NotificationType.Error},
-        nameof(Notification)
-      );
-
-
-
-    private void Button_Click(object sender, RoutedEventArgs e) =>
-      UpdatePreview(
-        Registry.OpenKey(AddressBar.Text) is { } registryKey
-          ? new RegistryClass(registryKey)
-          : default
-      );
-
-
-
     private void MetroWindow_SizeChanged(object sender, SizeChangedEventArgs e) => AddressBar.Width = Width - 400;
-
-
-
-    private void ClsidInput_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      ViewModel.SelectedItem = e.AddedItems.Count > 0 &&
-                               e.AddedItems[0] is SearchItem registryClass
-                                 ? registryClass
-                                 : default;
-      e.Handled = true;
-    }
   }
 }

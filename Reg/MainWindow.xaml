@@ -11,65 +11,17 @@
                  xmlns:local="clr-namespace:CBT.Reg.Search"
                  xmlns:export="clr-namespace:CBT.Reg.Export"
                  xmlns:value="clr-namespace:CBT.Reg.Value"
+                 xmlns:converters="http://metro.mahapps.com/winfx/xaml/shared"
                  mc:Ignorable="d"
                  Height="600" Width="1000" Icon="icon.ico" SizeChanged="MetroWindow_SizeChanged" MinWidth=" 500"
                  MinHeight="300"
                  RenderOptions.BitmapScalingMode="{Binding IconBitmapScalingMode, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type mah:MetroWindow}}}"
                  RenderOptions.EdgeMode="{Binding IconEdgeMode, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type mah:MetroWindow}}}">
-  <Window.Resources>
 
-    <Style x:Key="AutoCompleteBoxStyle" TargetType="{x:Type controls1:AutoCompleteBox}">
-      <!-- Fixes the performance is by using virtualization of the ListBox and reducing its max height
-      https://www.broculos.net/2014/04/wpf-how-to-improve-performance-of.html
-      -->
-      <Style.Resources>
-        <Style TargetType="{x:Type ListBox}">
-          <Setter Property="MaxHeight" Value="200" />
-        </Style>
-      </Style.Resources>
-    </Style>
-  </Window.Resources>
-  <Window.DataContext>
-    <reg:RegistryClassViewModel x:Name="ViewModel" />
 
-  </Window.DataContext>
   <mah:MetroWindow.LeftWindowCommands>
     <mah:WindowCommands HorizontalAlignment="Stretch" ShowSeparators="False">
-      <StackPanel Margin="5,0" Orientation="Horizontal">
-        <controls1:AutoCompleteBox x:Name="AddressBar" KeyUp="ClsidInput_KeyUp"
-                                   VerticalAlignment="Center" HorizontalAlignment="Stretch"
-                                   Style="{StaticResource AutoCompleteBoxStyle}"
-                                   ItemsSource="{Binding Items}"
-                                   SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                                   ItemFilter="{Binding Filter}"
-                                   Text="{Binding SearchText, Mode=TwoWay}"
-                                   Width="300"
-                                   Height="24"
-                                   Cursor="IBeam"
-                                   mah:TextBoxHelper.Watermark="{}{20D04FE0-3AEA-1069-A2D8-08002B30309D} or any class ID"
-                                   SelectionChanged="ClsidInput_SelectionChanged">
-          <controls1:AutoCompleteBox.ItemTemplate>
-            <DataTemplate DataType="{x:Type local:SearchItem}">
-              <StackPanel Orientation="Horizontal">
-                <Label
-                  Content="{Binding Id}"
-                  Width="300" />
-                <Label
-                  Content="{Binding Name}"
-                  FontStyle="Italic"
-                  Foreground="DarkGray" />
-              </StackPanel>
-            </DataTemplate>
-          </controls1:AutoCompleteBox.ItemTemplate>
-        </controls1:AutoCompleteBox>
-        <!-- <Button Content="&#xE721;" -->
-        <!--         FontFamily="Segoe MDL2 Assets" -->
-        <!--         Padding="0,3,3,3" -->
-        <!--         VerticalAlignment="Stretch" -->
-        <!--         Width="50" -->
-        <!--         Click="Button_Click" /> -->
-      </StackPanel>
-
+      <local:AddressBox x:Name="AddressBar" Width="300" Height="24" Margin="5,0" />
     </mah:WindowCommands>
   </mah:MetroWindow.LeftWindowCommands>
   <DockPanel>
@@ -83,19 +35,13 @@
       </StatusBarItem>
     </StatusBar>
 
-    <Grid>
-      <TabControl TabStripPlacement="Left">
-        <TabItem Header="View">
-          <value:ValueView x:Name="ValueView" />
-        </TabItem>
-        <TabItem Header="Export">
-          <export:ExportView x:Name="ExportView" />
-        </TabItem>
-      </TabControl>
-      <controls:NotificationArea x:Name="Notification" Position="BottomRight" MaxItems="1" />
-
-    </Grid>
-
-
+    <TabControl TabStripPlacement="Left">
+      <TabItem Header="View">
+        <value:ValueView x:Name="ValueView" />
+      </TabItem>
+      <TabItem Header="Export">
+        <export:ExportView x:Name="ExportView" />
+      </TabItem>
+    </TabControl>
   </DockPanel>
 </mah:MetroWindow>
