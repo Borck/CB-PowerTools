@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 
 
@@ -28,6 +29,12 @@ namespace CBT.Reg.Search {
       }
 
       e.Handled = true;
+    }
+
+
+
+    private void ClearButton_OnClick(object sender, RoutedEventArgs e) {
+      ViewModel.SearchText = string.Empty;
     }
   }
 }

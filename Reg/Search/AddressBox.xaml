@@ -24,7 +24,8 @@
   <UserControl.DataContext>
     <reg:RegistryClassViewModel x:Name="ViewModel" />
   </UserControl.DataContext>
-  <local:AutoCompleteBoxEx
+  <Grid>
+    <local:AutoCompleteBoxEx
     VerticalAlignment="Stretch"
     Style="{StaticResource AutoCompleteBoxStyle}"
     ItemsSource="{Binding Items}"
@@ -34,55 +35,54 @@
     Cursor="IBeam"
     mah:TextBoxHelper.Watermark="{}{20D04FE0-3AEA-1069-A2D8-08002B30309D} or any class ID"
     SelectionChanged="ClsidInput_SelectionChanged">
-    <controls:AutoCompleteBox.ItemTemplate>
-      <DataTemplate DataType="{x:Type local:SearchItem}">
-        <StackPanel Orientation="Horizontal">
-          <Label Content="{Binding Id}" Width="300" />
-          <Label Content="{Binding Name}" FontStyle="Italic" Foreground="DarkGray" />
-        </StackPanel>
-      </DataTemplate>
-    </controls:AutoCompleteBox.ItemTemplate>
-    <controls:AutoCompleteBox.TextBoxStyle>
-      <Style TargetType="{x:Type TextBox}">
-        <Setter Property="RenderTransform">
-          <Setter.Value>
-            <TransformGroup>
-              <ScaleTransform />
-              <SkewTransform />
-              <RotateTransform />
-              <TranslateTransform />
-            </TransformGroup>
-          </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-          <DataTrigger Binding="{Binding SelectedClass}" Value="{x:Null}">
-            <DataTrigger.EnterActions>
-              <BeginStoryboard>
-                <Storyboard
+      <controls:AutoCompleteBox.ItemTemplate>
+        <DataTemplate DataType="{x:Type local:SearchItem}">
+          <StackPanel Orientation="Horizontal">
+            <Label Content="{Binding Id}" Width="300" />
+            <Label Content="{Binding Name}" FontStyle="Italic" Foreground="DarkGray" />
+          </StackPanel>
+        </DataTemplate>
+      </controls:AutoCompleteBox.ItemTemplate>
+      <controls:AutoCompleteBox.TextBoxStyle>
+        <Style TargetType="{x:Type TextBox}">
+          <Setter Property="RenderTransform">
+            <Setter.Value>
+              <TransformGroup>
+                <ScaleTransform />
+                <SkewTransform />
+                <RotateTransform />
+                <TranslateTransform />
+              </TransformGroup>
+            </Setter.Value>
+          </Setter>
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding SelectedClass}" Value="{x:Null}">
+              <DataTrigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard
                   TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
-                  <DoubleAnimation
+                    <DoubleAnimation
                     From="-15" To="15" Duration="0:0:0.05"
                     AutoReverse="True"
                     RepeatBehavior="3x"
                     FillBehavior="Stop" />
-                  <!-- <DoubleAnimation By="-10" Duration="00:00:00:03" -->
-                  <!--                  AutoReverse="True" RepeatBehavior="1x"> -->
-                  <!--   <DoubleAnimation.EasingFunction> -->
-                  <!--     <SineEase EasingMode='EaseInOut' /> -->
-                  <!--   </DoubleAnimation.EasingFunction> -->
-                  <!-- </DoubleAnimation> -->
-                </Storyboard>
-              </BeginStoryboard>
-            </DataTrigger.EnterActions>
-          </DataTrigger>
-        </Style.Triggers>
-      </Style>
-    </controls:AutoCompleteBox.TextBoxStyle>
-  </local:AutoCompleteBoxEx>
-  <!-- <Button Content="&#xE721;" -->
-  <!--         FontFamily="Segoe MDL2 Assets" -->
-  <!--         Padding="0,3,3,3" -->
-  <!--         VerticalAlignment="Stretch" -->
-  <!--         Width="50" -->
-  <!--         Click="Button_Click" /> -->
+
+                  </Storyboard>
+                </BeginStoryboard>
+              </DataTrigger.EnterActions>
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </controls:AutoCompleteBox.TextBoxStyle>
+    </local:AutoCompleteBoxEx>
+    <Button Content="&#xE8BB;"
+          FontFamily="Segoe MDL2 Assets"
+          Foreground="{StaticResource MahApps.Brushes.ThemeBackground}"
+          FontSize="8"
+          Margin="3"
+          Padding="7,3"
+          VerticalAlignment="Stretch"
+          HorizontalAlignment="Right"
+          Click="ClearButton_OnClick" />
+  </Grid>
 </UserControl>
