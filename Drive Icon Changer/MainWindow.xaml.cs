@@ -9,8 +9,7 @@ using Notifications.Wpf.Core;
 
 
 
-namespace Drive_Icon_Changer
-{
+namespace Drive_Icon_Changer {
   /// <summary>
   ///   Interaction logic for MainWindow.xaml
   /// </summary>
@@ -21,7 +20,7 @@ namespace Drive_Icon_Changer
       typeof(MainWindow)
     );
 
-    private readonly Middleware handle;
+    private readonly Middleware _handle;
 
     public Drive SelectedDrive {
       get => (Drive)GetValue(SelectedDriveProperty);
@@ -31,10 +30,11 @@ namespace Drive_Icon_Changer
     private readonly NotificationManager _notificationManager;
 
 
+
     public MainWindow() {
       InitializeComponent();
       _notificationManager = new NotificationManager(Dispatcher);
-      handle = new Middleware(HandleError);
+      _handle = new Middleware(HandleError);
     }
 
 
@@ -43,7 +43,7 @@ namespace Drive_Icon_Changer
 
 
 
-    private void HandleError(string title, Exception e) { 
+    private void HandleError(string title, Exception e) {
       _notificationManager.ShowAsync(
         new NotificationContent {Title = title, Message = e.Message, Type = NotificationType.Error},
         nameof(Notification)
@@ -54,13 +54,14 @@ namespace Drive_Icon_Changer
 
 
     private void UpdateIcons() {
-      if (Drives != default) { 
+      if (Drives != default) {
         Drives.Items.Clear();
-        foreach (var driveIcon in handle.GetDriveIcons(ListDriveToggle.IsOn)) {
+        foreach (var driveIcon in _handle.GetDriveIcons(ListDriveToggle.IsOn)) {
           Drives.Items.Add(driveIcon);
         }
       }
     }
+
 
 
     private void Drive_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -90,7 +91,7 @@ namespace Drive_Icon_Changer
 
 
     private void SetIcon(string driveName, string iconFileName) {
-      handle.WriteDriveIconPathCurrentUser(driveName, iconFileName);
+      _handle.WriteDriveIconPathCurrentUser(driveName, iconFileName);
       Console.WriteLine($@"Set icon for drive '{driveName}' to '{iconFileName}'");
       UpdateIcons();
     }
@@ -99,7 +100,7 @@ namespace Drive_Icon_Changer
 
     private void DriveButton_Click(object sender, RoutedEventArgs e) {
       var driveName = (string)((Button)sender).DataContext;
-      handle.DeleteDriveIconPathCurrentUser(driveName);
+      _handle.DeleteDriveIconPathCurrentUser(driveName);
       //TODO: delete also for local machine
 
       Console.WriteLine($@"Reset icon for drive {driveName}");
@@ -108,10 +109,7 @@ namespace Drive_Icon_Changer
 
 
 
-    private void RefreshButton_Click(object sender, RoutedEventArgs e) { 
-      UpdateIcons();
-      _notificationManager.ShowAsync(new NotificationContent{Title = "Info", Message = "Icons refreshed", Type=NotificationType.Information });
-    }
+    private void RefreshButton_Click(object sender, RoutedEventArgs e) => UpdateIcons();
 
 
 
@@ -127,7 +125,7 @@ namespace Drive_Icon_Changer
       }
 
       if (files.Length != 1 ||
-          !handle.IsIconFile(files[0])) {
+          !_handle.IsIconFile(files[0])) {
         this.ShowMessageAsync("Error", "Drop only one icon file (*.ico, *.icl, *.exe, *.dll)");
         return;
       }
@@ -150,9 +148,6 @@ namespace Drive_Icon_Changer
 
 
 
-
-    private void ListActiveDrive_Toggled(object sender, RoutedEventArgs e) {
-      UpdateIcons();
-    }
+    private void ListActiveDrive_Toggled(object sender, RoutedEventArgs e) => UpdateIcons();
   }
 }

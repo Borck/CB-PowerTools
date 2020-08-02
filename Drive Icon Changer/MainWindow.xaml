@@ -60,6 +60,20 @@
                         VerticalAlignment="Center" Margin="5,0" IsOn="False" Toggled="ListActiveDrive_Toggled"
                         Width="150" />
       <Button Padding="15,5" HorizontalAlignment="Right" Click="RefreshButton_Click">
+        <Button.RenderTransform>
+          <RotateTransform CenterX="22" CenterY="15" />
+        </Button.RenderTransform>
+        <Button.Triggers>
+          <EventTrigger RoutedEvent="Button.Click">
+            <BeginStoryboard>
+              <Storyboard>
+                <DoubleAnimation
+                  Storyboard.TargetProperty="(Button.RenderTransform).(RotateTransform.Angle)"
+                  From="1" To="360" Duration="0:0:0.5" />
+              </Storyboard>
+            </BeginStoryboard>
+          </EventTrigger>
+        </Button.Triggers>
         <iconPacks:PackIconMaterial Kind="Reload" VerticalAlignment="Center" HorizontalAlignment="Center" />
       </Button>
     </mah:WindowCommands>
