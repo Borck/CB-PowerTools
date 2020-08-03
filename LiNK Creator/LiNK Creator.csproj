@@ -37,6 +37,7 @@
     <PackageReference Include="CB.Win32" />
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="MahApps.Metro" />
+    <PackageReference Include="NLog" />
     <PackageReference Include="Notifications.Wpf.Core" />
   </ItemGroup>
 

@@ -20,6 +20,7 @@
     <PackageReference Include="CB.WPF" />
     <PackageReference Include="MahApps.Metro" />
     <PackageReference Include="MahApps.Metro.IconPacks" />
+    <PackageReference Include="NLog" />
     <PackageReference Include="Notifications.Wpf.Core" />
     <PackageReference Include="System.Drawing.Common" />
     <PackageReference Include="System.Management" />
