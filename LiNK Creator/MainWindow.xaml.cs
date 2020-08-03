@@ -129,7 +129,7 @@ namespace LiNK_Creator {
           shortcutEntry =>
             new ShortcutListBoxItem(shortcutEntry.Key, shortcutEntry.Value, scanDirectory)
         )
-        .OrderBy(shortcutItem => shortcutItem.Item2.TargetPath)
+        .OrderBy(shortcutItem => shortcutItem.ShortcutInfo.TargetPath)
         .ToArray();
 
 
@@ -220,7 +220,7 @@ namespace LiNK_Creator {
       var selectedShortcutFiles = ShortcutsBox
                                   .SelectedItems
                                   .Cast<ShortcutListBoxItem>()
-                                  .Select(shortcut => shortcut.Item1);
+                                  .Select(shortcut => shortcut.ShortcutInfo.FullName);
       Middleware.DeleteFiles(selectedShortcutFiles);
       ScanAndUpdate();
     }
@@ -284,18 +284,22 @@ namespace LiNK_Creator {
 
 
 
-    private class ShortcutListBoxItem : Tuple<string, IWshShortcut> {
+    private class ShortcutListBoxItem {
+      public readonly string ShortcutFile;
+      public readonly IWshShortcut ShortcutInfo;
       private readonly string _scanDirectory;
 
 
 
-      public ShortcutListBoxItem(string shortcutFile, IWshShortcut shortcutInfo, string scanDirectory)
-        : base(shortcutFile, shortcutInfo) =>
+      public ShortcutListBoxItem(string shortcutFile, IWshShortcut shortcutInfo, string scanDirectory) {
+        ShortcutFile = shortcutFile;
+        ShortcutInfo = shortcutInfo;
         _scanDirectory = scanDirectory;
+      }
 
 
 
-      public override string ToString() => ToRelativePath(Item2.TargetPath, _scanDirectory);
+      public override string ToString() => ToRelativePath(ShortcutInfo.TargetPath, _scanDirectory);
     }
   }
 }
