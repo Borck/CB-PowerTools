@@ -31,13 +31,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CB.Win32" Version="0.1.4-a" />
-    <PackageReference Include="CB.WPF" Version="0.1.4-a" />
-    <PackageReference Include="DotNetProjects.WpfToolkit.Input" Version="6.0.84" />
-    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-    <PackageReference Include="MahApps.Metro" Version="2.1.1" />
-    <PackageReference Include="NLog" Version="4.7.2" />
-    <PackageReference Include="Notifications.Wpf.Core" Version="1.3.1" />
+    <PackageReference Include="CB.Win32" />
+    <PackageReference Include="CB.WPF" />
+    <PackageReference Include="DotNetProjects.WpfToolkit.Input" />
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="MahApps.Metro" />
+    <PackageReference Include="NLog" />
+    <PackageReference Include="Notifications.Wpf.Core" />
 
   </ItemGroup>
 

@@ -15,14 +15,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CB.System" Version="0.1.4-a" />
-    <PackageReference Include="CB.Win32" Version="0.1.4-a" />
-    <PackageReference Include="CB.WPF" Version="0.1.4-a" />
-    <PackageReference Include="MahApps.Metro" Version="2.1.1" />
-    <PackageReference Include="MahApps.Metro.IconPacks" Version="4.2.0" />
-    <PackageReference Include="Notifications.Wpf.Core" Version="1.2.0" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="System.Management" Version="4.7.0" />
+    <PackageReference Include="CB.System" />
+    <PackageReference Include="CB.Win32" />
+    <PackageReference Include="CB.WPF" />
+    <PackageReference Include="MahApps.Metro" />
+    <PackageReference Include="MahApps.Metro.IconPacks" />
+    <PackageReference Include="Notifications.Wpf.Core" />
+    <PackageReference Include="System.Drawing.Common" />
+    <PackageReference Include="System.Management" />
   </ItemGroup>
 
   <ItemGroup>
